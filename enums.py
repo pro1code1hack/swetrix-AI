@@ -21,10 +21,10 @@ class Fields(enum.Enum):
     """
     Enum class for the fields in the data.json file.
     """
-    x: DatetimeLinting = 'x'
-    uniques: List[int] = 'uniques'
-    visits: List[int] = 'visits'
-    sdur: List[int] = 'sdur'
+    X: DatetimeLinting = 'x'
+    UNIQUES = 'uniques'
+    VISITS = 'visits'
+    SDUR = 'sdur'
 
 
 class TimeMetrics(enum.Enum):
