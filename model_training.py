@@ -1,4 +1,5 @@
 import pandas as pd
+from matplotlib import pyplot
 from prophet import Prophet
 from prophet.plot import plot_plotly, plot_components_plotly
 
@@ -15,29 +16,28 @@ class Model:
         self.data = data
         self.model = Prophet()
 
-    def fit(self) -> 'Model':
-        """
-        Fit the model to the data.
-        """
+    def train(self):
+        # fit the model
         self.model.fit(self.data)
-        return self
+        self.model.plot(self.model.predict(self.data))
 
-    def predict(self, period: TimeMetrics) -> pd.DataFrame:
-        """
-        Predict the future values.
-        :param period: The period for which we want to predict the values.
-        """
-        future = self.model.make_future_dataframe(periods=period.value)
-        return self.model.predict(future)
+        plot_plotly(self.model, self.model.predict(self.data))
+        plot_components_plotly(self.model, self.model.predict(self.data))
+        # make a prediction
 
-    def plot(self, forecast: pd.DataFrame) -> None:
+        # SOLUTION! freq = 'H' - hourly -> it means that we want to predict the next 48 hours each hour
         """
-        Plot the results.
-        :param forecast: The forecasted data.
+        212 2023-02-04 20:00:00  31.843344  -13.115634   74.989653
         """
-        fig1 = self.model.plot(forecast)
-        fig2 = self.model.plot_components(forecast)
-        plot_plotly(self.model, forecast)
-        plot_components_plotly(self.model, forecast)
-        fig1.show()
-        fig2.show()
+        future = self.model.make_future_dataframe(periods=48, freq='H')
+        forecast = self.model.predict(future)
+        # summarize the forecast
+        print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].head())
+        print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail())
+        # plot forecast
+        self.model.plot(forecast)
+        pyplot.show()
+        # plot forecast components
+        self.model.plot_components(forecast)
+        pyplot.show()
+
