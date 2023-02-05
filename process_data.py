@@ -1,7 +1,9 @@
-from typing import Optional
+from dataclasses import Field
+from typing import Optional, Tuple, List
 
 import pandas as pd
 from enums import Fields, TimeMetrics
+from model_training import Model
 
 
 class Reader:
@@ -47,21 +49,36 @@ class Data:
         174 2023-02-09  33.481260   -1.747542   67.575251
         175 2023-02-10  35.490343    0.355324   68.711358
         """
-        self.processed_data = pd.DataFrame()
 
-    def create_ds_column(self) -> 'Data':
         """
-        The ds column must be present and named ds. It represents the time.
+        Here we will create the ds columns which is required by the Prophet model.
         """
-        self.original_data['x'] = self.processed_data['ds'] = pd.to_datetime(self.original_data['x'])
-        return self
+        # TODO change to enums
 
-    def create_y_column(self, y_column: 'Fields') -> 'Data':
-        """
-        The y column must be numeric, and represents the measurement we wish to forecast.
-        #TODO 1.Maybe it is better to use float instead of int.
-        #TODO 2. How to iterate over the list of fields? Maybe we can use the enum class for that and iterate over it,
-        #TODO but it breaks the logic of the class and SOLID principles.
-        """
-        self.original_data[y_column.value] = self.processed_data['y'] = self.original_data[y_column.value].astype(float)
-        return self
+        self.ds = self.create_ds_column()
+        self.uniques_with_ds = pd.DataFrame()
+        self.visits_with_ds = pd.DataFrame()
+        self.sdur_with_ds = pd.DataFrame()
+
+        self.process_data()
+
+    def create_ds_column(self) -> pd.Series:
+        return pd.to_datetime(self.original_data['x'])
+
+    def change_uniques_to_y(self) -> None:
+        self.uniques_with_ds['ds'] = self.ds
+        self.uniques_with_ds['y'] = self.original_data['uniques'].astype(int)
+
+    def change_visits_to_y(self) -> None:
+        self.visits_with_ds['ds'] = self.ds
+        self.visits_with_ds['y'] = self.original_data["visits"].astype(int)
+
+    def change_sdur_to_y(self) -> 'Data':
+        self.sdur_with_ds['ds'] = self.ds
+        self.sdur_with_ds['y'] = self.original_data["sdur"].astype(int)
+
+    def process_data(self):
+        self.change_uniques_to_y()
+        self.change_visits_to_y()
+        self.change_sdur_to_y()
+
