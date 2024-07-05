@@ -1,0 +1,17 @@
+version: '3.1'
+
+services:
+  clickhouse:
+    image: yandex/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - ./clickhouse_data:/var/lib/clickhouse
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
