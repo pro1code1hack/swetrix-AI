@@ -60,12 +60,10 @@ def serialize_data(data):
     serialized_data.append((pid, next_1_hour, next_4_hour, next_8_hour, next_24_hour, next_72_hour, next_168_hour))
     return serialized_data
 
-def insert_data():
+
+def insert_predictions(predictions):
     """Insert sample JSON data into the predictions table"""
-    with open('project_sample.json', 'r') as f:
-        data = json.load(f)
-    
-    serialized_data = serialize_data(data)
+    serialized_data = serialize_data(json.loads(predictions))
     clickhouse_client.insert_data('predictions', serialized_data)
 
 
