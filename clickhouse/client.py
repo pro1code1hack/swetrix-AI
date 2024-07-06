@@ -27,6 +27,4 @@ class ClickHouseClient:
 
 
 clickhouse_client = ClickHouseClient()
-result = clickhouse_client.execute_query("SELECT * FROM training_data")
-print(result)
 
