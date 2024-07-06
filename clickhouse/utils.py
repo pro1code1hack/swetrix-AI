@@ -1,6 +1,6 @@
 import base64
 import pickle
-from client import clickhouse_client
+from clickhouse.client import clickhouse_client
 
 
 """

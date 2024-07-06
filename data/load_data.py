@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from constants import columns, date_col, agg_cols
+from clickhouse.client import clickhouse_client
+
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -171,14 +173,14 @@ def set_target_columns(df):
 def remove_date_col(df):
     """Drop the date columun"""
     df.drop([date_col],axis=1,inplace=True)
-
+    return df
 
 def get_cols_withohut_pid(df):
     """Return the columns EXCEPT OF PID"""
     cols=df.drop("pid",axis=1).columns
-    return cols
+    return df, cols
 
-def create_target_traffic_by_target_columns(target_columns):    # TODO take the data from the db
+def create_target_traffic_by_target_columns(df, target_columns):
     """Extract the traffic for next hours"""
     next_hrs = []
     for hr in [1,4,8,12,24,72,168]:         # TODO dynamical value, as well dynamical for the database
@@ -188,25 +190,26 @@ def create_target_traffic_by_target_columns(target_columns):    # TODO take the 
     return next_hrs
 
 
-#Pre-processing
-df = read_data_csv()
-df = sort_df_by_date_col(date_col, df)
-df = convert_df_to_datetime(df)
-df = filter_df_by_specific_date(df, time_delta_years=1)
-df = filter_df_with_most_frequent_pid(df)
-df = replace_null_values(df)
-df, cat_features = categorize_features(df)
-df = extract_date_components(df, date_col)
-df = add_traffic_table(df)
-df = convert_cat_features_to_dummies(df, cat_features) 
-df = combine_all_pids(df, date_col, agg_cols)
+def pre_process_data():
+    #Pre-processing
+    df = read_data_csv()
+    df = sort_df_by_date_col(date_col, df)
+    df = convert_df_to_datetime(df)
+    df = filter_df_by_specific_date(df, time_delta_years=1)
+    df = filter_df_with_most_frequent_pid(df)
+    df = replace_null_values(df)
+    df, cat_features = categorize_features(df)
+    df = extract_date_components(df, date_col)
+    df = add_traffic_table(df)
+    df = convert_cat_features_to_dummies(df, cat_features) 
+    df = combine_all_pids(df, date_col, agg_cols)
 
-# Setting data fro predictions
-target_columns = set_target_columns(df)
-remove_date_col(df)
-cols = get_cols_withohut_pid(df)
-next_hrs = create_target_traffic_by_target_columns(target_columns)
+    # Setting data fro predictions
+    target_columns = set_target_columns(df)
+    df = remove_date_col(df)
+    df, cols = get_cols_withohut_pid(df)
+    next_hrs = create_target_traffic_by_target_columns(df, target_columns)
 
-# Clear N/A
-df= df.dropna()
-
+    # Clear N/A
+    df= df.dropna()
+    return df, cat_features, cols, next_hrs
