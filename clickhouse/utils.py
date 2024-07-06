@@ -1,5 +1,7 @@
 import base64
 import pickle
+import json
+from data.serialisation import serialise_predictions, serialise_data_for_clickhouse
 from clickhouse.client import clickhouse_client
 
 
@@ -24,19 +26,10 @@ def deserialize_model(base64_model):
     return model
 
 
-
-# TESTING THIS FOR NOW, SHOULD BE REMOVED LATER
-def insert_model():
-    serialized_model = serialize_model('trained_model.pkl')
-    training_tmp_data = [(['dv', 'br', 'os', 'lc', 'me', 'unique'], ['year', 'month', 'day'], ['traffic_next_1_hr'], serialized_model)]
-    clickhouse_client.insert_data('training_tmp', training_tmp_data)
-    print("Model inserted successfully.")
-
-
 def fetch_model():
     result = clickhouse_client.execute_query("SELECT model FROM training_tmp LIMIT 1")
     if result:
-        serialized_model = result[0]
+        serialized_model = result[0][0]
         model = deserialize_model(serialized_model)
         return model
     else:
@@ -44,36 +37,10 @@ def fetch_model():
         return None
     
 
-import json
-def serialize_data(data):
-    """Serialize the provided JSON data for ClickHouse insertion"""
-    serialized_data = []
-    
-    pid = data['pid']
-    next_1_hour = json.dumps(data.get('next_1_hour', {}))
-    next_4_hour = json.dumps(data.get('next_4_hour', {}))
-    next_8_hour = json.dumps(data.get('next_8_hour', {}))
-    next_24_hour = json.dumps(data.get('next_24_hour', {}))
-    next_72_hour = json.dumps(data.get('next_72_hour', {}))
-    next_168_hour = json.dumps(data.get('next_168_hour', {}))
-    
-    serialized_data.append((pid, next_1_hour, next_4_hour, next_8_hour, next_24_hour, next_72_hour, next_168_hour))
-    return serialized_data
-
-
 def insert_predictions(predictions):
-    """Insert sample JSON data into the predictions table"""
-    serialized_data = serialize_data(json.loads(predictions))
+    """Insert serialised JSON data into the predictions table"""
+    predictions_data = json.loads(predictions)
+    processed_data = serialise_predictions(predictions_data)
+    serialized_data = serialise_data_for_clickhouse(processed_data)
     clickhouse_client.insert_data('predictions', serialized_data)
 
-
-# base64_model = fetch_model() # works
-# model = deserialize_model(base64_model) # works
-
-"""
-Query executes too long, though it may be fine for now, as model weights 300MB approximately
-
-select * from training_tmp LIMIT 1;
-1 rows in set. Elapsed: 2.633 sec. 
-
-"""

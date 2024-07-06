@@ -1,3 +1,5 @@
 clickhouse_data/
 trained_model.pkl
+venv
+analytics-obfuscated-faked.csv
 __pycache__/

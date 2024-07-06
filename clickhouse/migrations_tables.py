@@ -19,6 +19,7 @@ def create_tables():
         next_1_hour String,
         next_4_hour String,
         next_8_hour String,
+        next_12_hour String,
         next_24_hour String,
         next_72_hour String,
         next_168_hour String

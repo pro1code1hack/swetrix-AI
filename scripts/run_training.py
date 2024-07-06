@@ -23,10 +23,6 @@ def train():
     model = train_model(df,cols, next_hrs)
     save_model(file_path, model)
 
-    print("cat_features:", cat_features)
-    print("cols:", cols)
-    print("next_hrs:", next_hrs)
-
     serialized_model = serialize_model(file_path)
     training_tmp_data = [(cat_features, cols.to_list(), next_hrs, serialized_model)]
 

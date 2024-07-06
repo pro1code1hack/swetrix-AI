@@ -10,6 +10,7 @@ class TimeFrameEnum(str, Enum):
     next_1_hour = "next_1_hour"
     next_4_hour = "next_4_hour"
     next_8_hour = "next_8_hour"
+    next_12_hour = "next_12_hour"
     next_24_hour = "next_24_hour"
     next_72_hour = "next_72_hour"
     next_168_hour = "next_168_hour"

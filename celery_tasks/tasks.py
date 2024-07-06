@@ -5,12 +5,9 @@ from scripts.run_prediction import predict
 
 @celery_app.task
 def run_training_module():
-    print("Running training module...")
     train()
 
 
 @celery_app.task
 def run_prediction_module():
-    from clickhouse.utils import insert_predictions
-    predictions = predict()
-    insert_predictions(predictions)
+    predict()
