@@ -24,17 +24,20 @@ def get_projects_records() -> pd.DataFrame:
     # temporary:
     df = pd.read_csv(
         "analytics-obfuscated-faked.csv",
-        encoding='ISO-8859-1',
+        encoding="ISO-8859-1",
         low_memory=False,
-        names=columns
+        names=columns,
     )
     return df
 
 
 def get_variable_from_tmp(var_name: str):
     """Get the variable from training_tmp table"""
-    result = clickhouse_client.execute_query(f"SELECT {var_name} FROM training_tmp")
-    variable = result[0][0]     # Clickhouse ORM returns a tuple of list, accessing the actual python object
+    result = clickhouse_client.execute_query(
+        f"SELECT {var_name} FROM training_tmp"
+    )
+    # Clickhouse ORM returns a tuple of list, accessing the actual python object
+    variable = result[0][0]  
     return variable
 
 
@@ -131,6 +134,7 @@ def fill_missing_columns(df, all_cols):
     df[missing_cols] = 0
 
     return df
+
 
 def predict_future_data():
     """Pre-processing of data"""
