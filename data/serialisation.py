@@ -36,31 +36,37 @@ def serialise_predictions(data):
 
     return results
 
-
 def serialise_data_for_clickhouse(data):
     """Serialise the processed data for ClickHouse insertion"""
     serialized_data = []
 
     for record in data:
         pid = record["pid"]
-        next_1_hour = json.dumps(record.get("next_1_hour", {}))
-        next_4_hour = json.dumps(record.get("next_4_hour", {}))
-        next_8_hour = json.dumps(record.get("next_8_hour", {}))
-        next_12_hour = json.dumps(record.get("next_12_hour", {}))
-        next_24_hour = json.dumps(record.get("next_24_hour", {}))
-        next_72_hour = json.dumps(record.get("next_72_hour", {}))
-        next_168_hour = json.dumps(record.get("next_168_hour", {}))
+        next_hours = []
+        cumulative_data = {}
+
+        for hr in range(1, 25):
+            current_hour_data = record.get(f"next_{hr}_hour", {})
+            for key, value in current_hour_data.items():
+                if key in cumulative_data:
+                    if isinstance(value, dict) and isinstance(cumulative_data[key], dict):
+                        for sub_key, sub_value in value.items():
+                            if sub_key in cumulative_data[key]:
+                                cumulative_data[key][sub_key] += sub_value
+                            else:
+                                cumulative_data[key][sub_key] = sub_value
+                    else:
+                        cumulative_data[key] += value
+                else:
+                    cumulative_data[key] = value
+
+            next_n_hour = json.dumps(cumulative_data)
+            next_hours.append(next_n_hour)
 
         serialized_data.append(
             (
                 pid,
-                next_1_hour,
-                next_4_hour,
-                next_8_hour,
-                next_12_hour,
-                next_24_hour,
-                next_72_hour,
-                next_168_hour,
+                *next_hours
             )
         )
 

@@ -8,14 +8,30 @@ app = FastAPI()
 
 
 class TimeFrameEnum(str, Enum):
-    next_1_hour = "next_1_hour"
-    next_4_hour = "next_4_hour"
-    next_8_hour = "next_8_hour"
-    next_12_hour = "next_12_hour"
-    next_24_hour = "next_24_hour"
-    next_72_hour = "next_72_hour"
-    next_168_hour = "next_168_hour"
-
+    next_1_hour= "next_1_hour"
+    next_2_hour= "next_2_hour"
+    next_3_hour= "next_3_hour"
+    next_4_hour= "next_4_hour"
+    next_5_hour= "next_5_hour"
+    next_6_hour= "next_6_hour"
+    next_7_hour= "next_7_hour"
+    next_8_hour= "next_8_hour"
+    next_9_hour= "next_9_hour"
+    next_10_hour= "next_10_hour"
+    next_11_hour= "next_11_hour"
+    next_12_hour= "next_12_hour"
+    next_13_hour= "next_13_hour"
+    next_14_hour= "next_14_hour"
+    next_15_hour= "next_15_hour"
+    next_16_hour= "next_16_hour"
+    next_17_hour= "next_17_hour"
+    next_18_hour= "next_18_hour"
+    next_19_hour= "next_19_hour"
+    next_20_hour= "next_20_hour"
+    next_21_hour= "next_21_hour"
+    next_22_hour= "next_22_hour"
+    next_23_hour= "next_23_hour"
+    next_24_hour= "next_24_hour"
 
 @app.get("/predict/")
 def get_predictions(pid: str, timeframe: TimeFrameEnum):

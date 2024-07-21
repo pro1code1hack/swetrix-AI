@@ -74,7 +74,7 @@ def categorize_features(df, id_column="pid", threshold=300):
     for col in columns_to_process:
         n = df[col].nunique()
         # Additionaly exclude campaing columns too hard to predict right now and resource consuming
-        if col not in ['dv', 'br', 'os', 'lc', 'cc', 'unique']:
+        if col not in ['dv', 'br', 'os', 'lc', 'unique']:
             df.drop(col, axis=1, inplace=True)
             continue
 
@@ -212,18 +212,8 @@ def get_cols_withohut_pid(df):
 def create_target_traffic_by_target_columns(df, target_columns):
     """Extract the traffic for next hours"""
     next_hrs = []
-    for hr in [
-        1,
-        4,
-        8,
-        12,
-        24,
-        72,
-        168,
-    ]:  # TODO dynamical value, as well dynamical for the database
-        for (
-            target
-        ) in target_columns:  # TODO save target_columns into the database
+    for hr in range(1,24):
+        for (target) in target_columns:
             df[f"{target}_next_{str(hr)}_hr"] = df.groupby("pid")[
                 target
             ].shift(-1 * hr)
