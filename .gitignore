@@ -5,3 +5,5 @@ analytics-obfuscated-faked.csv
 __pycache__/
 remove_pycache.sh
 tasks.txt
+logs/
+.env

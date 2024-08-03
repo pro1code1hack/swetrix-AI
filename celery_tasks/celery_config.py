@@ -1,9 +1,12 @@
 from celery import Celery
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 celery_app = Celery(
     "swetrix-ai-celery",
-    broker="redis://localhost:6379/0",
-    backend="redis://localhost:6379/0",
+    broker=os.getenv("REDIS_BROKER"),
+    backend=os.getenv("REDIS_BACKEND")
 )
 
 celery_app.conf.update(
