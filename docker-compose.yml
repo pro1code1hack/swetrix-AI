@@ -12,6 +12,11 @@ services:
     environment:
       - DATABASE_URL=clickhouse://clickhouse:9000
       - REDIS_URL=redis://redis:6379
+      - CLICKHOUSE_HOST=clickhouse
+      - CLICKHOUSE_PORT=9000
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=
+      - CLICKHOUSE_DATABASE=test_db
     volumes:
       - .:/app
     networks:

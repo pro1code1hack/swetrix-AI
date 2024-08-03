@@ -15,6 +15,8 @@ columns = (
     "cc",
     "rg",
     "ct",
+    "meta.key",
+    "meta.value",
     "sdur",
     "unique",
     "created",

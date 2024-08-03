@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from constants import columns, date_col, agg_cols
 from logging_config import setup_logger
+from clickhouse.client import clickhouse_client
 
 logger = setup_logger("load_data")
 
@@ -12,9 +13,13 @@ warnings.filterwarnings("ignore")
 
 def read_data_csv(file_path="analytics-obfuscated-faked.csv"):
     """Read the csv file with encodings and add columns to it"""
-    df = pd.read_csv(
-        file_path, encoding="ISO-8859-1", low_memory=False, names=columns
-    )
+    data = clickhouse_client.execute_query('SELECT * FROM analytics')
+    df = pd.DataFrame(data, columns=columns)
+
+    # Exclude specific columns
+    columns_to_exclude = ["meta.key", "meta.value"]
+    df = df.drop(columns=columns_to_exclude)
+    
     return df
 
 

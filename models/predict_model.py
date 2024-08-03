@@ -22,12 +22,14 @@ insert new predictions
 def get_projects_records() -> pd.DataFrame:
     # query the clickhouse database to get historical data for all projects and predict future traffic for them
     # temporary:
-    df = pd.read_csv(
-        "analytics-obfuscated-faked.csv",
-        encoding="ISO-8859-1",
-        low_memory=False,
-        names=columns,
-    )
+    """Read the csv file with encodings and add columns to it"""
+    data = clickhouse_client.execute_query('SELECT * FROM analytics')
+    df = pd.DataFrame(data, columns=columns)
+
+    # Exclude specific columns
+    columns_to_exclude = ["meta.key", "meta.value"]
+    df = df.drop(columns=columns_to_exclude)
+    
     return df
 
 
